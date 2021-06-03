@@ -95,7 +95,7 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)
 
-        if start_time < now < end_time - datetime.timedelta(seconds=30):
+        if start_time < now < end_time - datetime.timedelta(seconds=180):
             print("Target_price Searching start", now)
             buy("KRW-BTC", 0.5)
             buy("KRW-ETH", 0.5)
