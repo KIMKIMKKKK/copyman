@@ -20,7 +20,7 @@ def get_start_time(ticker):
     start_time = df.index[0]
     return start_time
 
-start_time = get_start_time("KRW-BTC")
+start_time = get_start_time("KRW-ETH")
 end_time = start_time + datetime.timedelta(days=1)
 
 def get_balance(ticker):
@@ -40,6 +40,16 @@ def get_ma15(ticker):
     df = pyupbit.get_ohlcv(ticker, interval="day", count=15)
     ma15 = df['close'].rolling(15).mean().iloc[-1]
     return ma15
+
+def get_ma20(ticker):
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    ma20 = df['close'].rolling(15).mean().iloc[-1]
+    return ma20
+
+def get_ma5(ticker):
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=5)
+    ma5 = df['close'].rolling(5).mean().iloc[-1]
+    return ma5
 
 predicted_close_price = 0
 def predict_price(ticker):
@@ -64,9 +74,11 @@ def buy(coin, k):
         predict_price(coin)
         schedule.every().hour.do(lambda: predict_price(coin))
         target_price = get_target_price(coin, k)
+        ma5 = get_ma5(coin)
         ma15 = get_ma15(coin)
+        ma20 = get_ma20(coin)
         current_price = get_current_price(coin)
-        if target_price < current_price and ma15 < current_price and current_price < predicted_close_price:
+        if target_price < current_price and ma15 < current_price and current_price < predicted_close_price and (ma20*0.95) <= ma5:
             krw = get_balance("KRW")
             if krw > 5000:
                 upbit.buy_market_order(coin, krw*0.9995)
@@ -83,7 +95,7 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)
 
-        if start_time < now < end_time - datetime.timedelta(seconds=120):
+        if start_time < now < end_time - datetime.timedelta(seconds=30):
             print("Target_price Searching start", now)
             buy("KRW-BTC", 0.5)
             buy("KRW-ETH", 0.5)
@@ -108,6 +120,13 @@ while True:
             buy("KRW-ORBS", 0.5)
             buy("KRW-NEO", 0.5)
             buy("KRW-ETC", 0.5)
+            buy("KRW-ZIL", 0.5)
+            buy("KRW-REP", 0.5)
+            buy("KRW-IOTA", 0.5)
+            buy("KRW-SRM, 0.5)
+            buy("KRW-SBD", 0.5)
+            buy("KRW-ZRX", 0.5)
+            buy("KRW-MED", 0.5)
         else:
             print("last_price selling", now)
             sell("BTC", "KRW-BTC")
@@ -133,6 +152,13 @@ while True:
             sell("ORBS", "KRW-ORBS")
             sell("NEO", "KRW-NEO")
             sell("ETC", "KRW-ETC")
+            sell("ZIL", "KRW-ZIL")
+            sell("REP", "KRW-REP")
+            sell("IOTA", "KRW-IOTA")
+            sell("SRM", "KRW-SRM")
+            sell("SBD", "KRW-SBD")    
+            sell("ZRX", "KRW-ZRX")
+            sell("MED", "KRW-MED")
     except Exception as e:
         print(e)
         time.sleep(1)          
