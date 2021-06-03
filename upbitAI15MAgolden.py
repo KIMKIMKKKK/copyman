@@ -123,7 +123,7 @@ while True:
             buy("KRW-ZIL", 0.5)
             buy("KRW-REP", 0.5)
             buy("KRW-IOTA", 0.5)
-            buy("KRW-SRM, 0.5)
+            buy("KRW-SRM", 0.5)
             buy("KRW-SBD", 0.5)
             buy("KRW-ZRX", 0.5)
             buy("KRW-MED", 0.5)
