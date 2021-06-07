@@ -12,7 +12,7 @@ upbit = pyupbit.Upbit(access, secret)
 
 def get_target_price(ticker):
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
-    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * 0.49
+    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * 0.5
     return target_price
 
 def get_start_time(ticker):
@@ -20,7 +20,7 @@ def get_start_time(ticker):
     start_time = df.index[0]
     return start_time
 
-start_time = get_start_time("KRW-BTC")
+start_time = get_start_time("KRW-ETH")
 end_time = start_time + datetime.timedelta(days=1)
 
 def get_balance(ticker):
@@ -69,12 +69,17 @@ def predict_price(ticker):
     closeValue = closeDf['yhat'].values[0]
     predicted_close_price = closeValue
 
-def get_BTC_price(ticker):
+def get_target_price2(ticker):
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
-    BTC_price = get_current_price("KRW-BTC") - df.iloc[0]['close']
+    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * 0.125
+    return target_price
+
+def get_BTC_price():
+    df = pyupbit.get_ohlcv("KRW-BTC", interval="day", count=2)
+    BTC_price = get_current_price("KRW-BTC") - get_target_price2("KRW-BTC")
     return BTC_price
 
-BTC_price = get_BTC_price("KRW-BTC")
+BTC_price = get_BTC_price()
 
 def buy(coin):
     if start_time < now < end_time - datetime.timedelta(seconds=40):
@@ -85,10 +90,10 @@ def buy(coin):
         ma15 = get_ma15(coin)
         ma20 = get_ma20(coin)
         current_price = get_current_price(coin)
-        if target_price <= current_price and current_price <= target_price*1.02 and ma15 <= current_price and target_price <= predicted_close_price and ma20*0.95 <= ma5 and 0 <= BTC_price:
+        if target_price <= current_price and current_price <= target_price*1.01 and ma15 <= current_price and current_price <= predicted_close_price and ma20*0.95 <= ma5 and 0 < BTC_price:
             krw = get_balance("KRW")
             if krw > 5000:
-                upbit.buy_market_order(coin, krw*0.3)
+                upbit.buy_market_order(coin, krw*0.2)
 
 def sell(coin, KRW):
     btc = get_balance(coin)
@@ -114,14 +119,8 @@ while True:
             buy("KRW-LINK")
             buy("KRW-LTC")
             buy("KRW-XLM")
-            buy("KRW-THETA")
-            buy("KRW-VET")
-            buy("KRW-ETC")
             buy("KRW-EOS")
             buy("KRW-TRX")
-            buy("KRW-NEO")
-            buy("KRW-IOTA")
-            buy("KRW-ATOM")
         else:
             print("last_price selling", now)
             sell("BTC", "KRW-BTC")
@@ -134,14 +133,8 @@ while True:
             sell("LINK", "KRW-LINK")
             sell("LTC", "KRW-LTC")
             sell("XLM", "KRW-XLM")
-            sell("THETA", "KRW-THETA")
-            sell("VET", "KRW-VET")
-            sell("ETC", "KRW-ETC")
             sell("EOS", "KRW-EOS")
             sell("TRX", "KRW-TRX")
-            sell("NEO", "KRW-NEO")
-            sell("IOTA", "KRW-IOTA")
-            sell("ATOM", "KRW-ATOM")
     except Exception as e:
         print(e)
         time.sleep(1)          
