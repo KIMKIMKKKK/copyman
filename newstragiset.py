@@ -12,7 +12,7 @@ upbit = pyupbit.Upbit(access, secret)
 
 def get_target_price(ticker):
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
-    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * 0.5
+    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * 0.35
     return target_price
 
 def get_start_time(ticker):
@@ -90,7 +90,7 @@ def buy(coin):
         ma15 = get_ma15(coin)
         ma20 = get_ma20(coin)
         current_price = get_current_price(coin)
-        if target_price <= current_price and current_price <= target_price*1.01 and ma15 <= current_price and current_price <= predicted_close_price and ma20*0.95 <= ma5 and 0 < BTC_price:
+        if target_price <= current_price and current_price <= target_price*1.01 and ma15 <= current_price and current_price <= predicted_close_price and ma20*0.95 <= ma5 and 0 <= BTC_price:
             krw = get_balance("KRW")
             if krw > 5000:
                 upbit.buy_market_order(coin, krw*0.2)
